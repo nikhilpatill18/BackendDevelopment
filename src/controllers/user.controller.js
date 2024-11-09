@@ -236,7 +236,7 @@ const changeuserpassword = asynchandler(async (req, res) => {
     // console.log(checkpass)
 
     if (!checkpass) {
-        throw new ApiError(401, "Old password incorrect")
+        throw new ApiError(500, "Old password incorrect")
     }
 
     user.password = newPassword
@@ -308,4 +308,71 @@ const updatecover = asynchandler(async (req, res) => {
     return res.status(200).json(new Apiresponse(200, updatedata, "coverImage updated successfully"))
 })
 
-export { loginUser, registerUser, logoutUser, refreshaccessToken, changeuserpassword, getCurrentUser, updateavatar, updatecover }
+const getUserchanneprofile = asynchandler(
+    async (req, res) => {
+        const username = req.params
+        if (!username) {
+            throw new ApiError(400, "Username not found")
+        }
+
+        const channel = await User.aggregate([
+            {
+                $match: {
+                    username: username
+                }
+            }
+            ,
+            {
+                $lookup: {
+                    from: "subscriptions",
+                    localField: "_id",
+                    foreignField: "channel",
+                    as: "subscribers"
+                }
+            },
+            {
+                $lookup: {
+                    from: "subscriptions",
+                    localField: "_id",
+                    foreignField: "subscriber",
+                    as: "subscribedTo"
+                }
+            },
+            {
+                $addFields: {
+                    subscriberCount: {
+                        $size: "subscribers"
+                    },
+                    channelcount: {
+                        $size: "subscribedTo"
+                    },
+                    issubscribed: {
+                        $cond: {
+                            if: { $in: [req.user?._id, "subscribers"] }
+                            , then: true,
+                            else: false
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    fullname: 1,
+                    username: 1,
+                    avatar: 1,
+                    coverImage: 1,
+                    subscriberCount: 1,
+                    channelcount: 1,
+                    issubscribed: 1
+                }
+            }
+        ])
+        if (!channel) {
+            throw new ApiError(400, "something went wrong")
+        }
+        return res.status(200)
+            .json(new Apiresponse(200, channel[0, "userfetches sucessfully"]))
+    }
+)
+
+export { loginUser, registerUser, logoutUser, refreshaccessToken, changeuserpassword, getCurrentUser, updateavatar, updatecover, getUserchanneprofile }
