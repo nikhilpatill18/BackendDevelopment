@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { registerUser, loginUser, logoutUser, refreshaccessToken, changeuserpassword, updateavatar, updatecover } from '../controllers/user.controller.js'
+import { registerUser, loginUser, logoutUser, refreshaccessToken, changeuserpassword, updateavatar, updatecover, getUserchanneprofile, watchhistory } from '../controllers/user.controller.js'
 import { upload } from '../middleware/multer.middleware.js'
 import { verifyJWT } from '../middleware/Auth.middleware.js'
 
@@ -27,5 +27,7 @@ Userrouter.route("/refres-token").post(refreshaccessToken)
 Userrouter.route("/change-password").post(verifyJWT, changeuserpassword)
 Userrouter.route("/change-avatar").post(verifyJWT, upload.single('avatar'), updateavatar)
 Userrouter.route("/change-coverImage").post(verifyJWT, upload.single('coverImage'), updatecover)
+Userrouter.route("/c/:username").get(verifyJWT, getUserchanneprofile)
+Userrouter.route("/watch-history").get(verifyJWT, watchhistory)
 
 export default Userrouter
