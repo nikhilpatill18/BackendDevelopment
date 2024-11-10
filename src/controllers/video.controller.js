@@ -3,6 +3,7 @@ import { ApiError } from "../utils/apierror.js"
 import { uploadoncloudinary } from "../utils/fileupload.js";
 import { Apiresponse } from '../utils/Apiresponse.js'
 import { asynchandler } from '../utils/asynchandler.js';
+import mongoose from 'mongoose';
 
 const publishAVideo = asynchandler(async (req, res) => {
     // TODO: get video, upload to cloudinary, create video
@@ -50,4 +51,37 @@ const publishAVideo = asynchandler(async (req, res) => {
 
 
 })
-export { publishAVideo }
+
+const getVideoById = asynchandler(async (req, res) => {
+    const { videoId } = req.params
+    //TODO: get video by id
+    // aggreate pipeline for video by id
+    // console.log(mongoose.Types.ObjectId(videoId))
+    // if (!new mongoose.Types.ObjectId.isValid(videoId)) {
+    //     throw new ApiError(400, "invalid")
+    // }
+
+    const videodetails = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(videoId)
+            }
+        },
+        {
+            $project: {
+                videoFile: 1,
+                title: 1,
+                views: 1
+            }
+        }
+    ])
+    console.log(videodetails) // todo empy video array is coming check after
+
+    if (!videodetails || !videodetails.length) {
+        throw new ApiError(404, "Video not found")
+    }
+    return res.status(200)
+        .json(new Apiresponse(200, videodetails, "Video details found"))
+
+})
+export { publishAVideo, getVideoById }

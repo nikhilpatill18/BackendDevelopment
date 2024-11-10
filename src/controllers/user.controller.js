@@ -370,7 +370,7 @@ const getUserchanneprofile = asynchandler(
             throw new ApiError(400, "something went wrong")
         }
         return res.status(200)
-            .json(new Apiresponse(200, channel[0, "userfetches sucessfully"]))
+            .json(new Apiresponse(200, channel[0], "userfetches sucessfully"))
     }
 )
 

@@ -1,7 +1,7 @@
 import { upload } from '../middleware/multer.middleware.js'
 import { verifyJWT } from '../middleware/Auth.middleware.js'
 import { Router } from 'express'
-import { publishAVideo } from '../controllers/video.controller.js'
+import { publishAVideo, getVideoById } from '../controllers/video.controller.js'
 
 const videoroute = Router()
 videoroute.use(verifyJWT)
@@ -17,4 +17,6 @@ videoroute.route('/upload-video').post(upload.fields([
 ]),
     publishAVideo
 )
+
+videoroute.route('/get-videoById').get(getVideoById)
 export default videoroute
