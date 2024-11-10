@@ -5,7 +5,6 @@ import { uploadoncloudinary } from "../utils/fileupload.js";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken"
 import { Apiresponse } from '../utils/Apiresponse.js'
-
 const registerUser = asynchandler(
     async (req, res) => {
         // get user detais
@@ -163,8 +162,8 @@ const logoutUser = asynchandler(async (req, res) => {
 
     await User.findByIdAndUpdate(
         req.user._id, {
-        $set: {
-            refreshToken: undefined
+        $unset: {
+            refreshToken: 1
         }
     },
         {
