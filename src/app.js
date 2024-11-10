@@ -21,7 +21,9 @@ app.use(cookieParser())
 //routes
 
 import Userrouter from './routes/user.routes.js'
+import videoroute from './routes/video.routes.js'
 // for user register
 app.use('/api/v1/users', Userrouter)  // for this the url look like this ' http://localhost:8000/api/v1/users/register
+app.use('/api/v1/users', videoroute)
 
 export default app
