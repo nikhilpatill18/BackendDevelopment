@@ -5,16 +5,17 @@ import { Apiresponse } from '../utils/Apiresponse.js'
 import { asynchandler } from '../utils/asynchandler.js';
 import mongoose from 'mongoose';
 
+//upload the video
 const publishAVideo = asynchandler(async (req, res) => {
     // TODO: get video, upload to cloudinary, create video
     const { title, discription } = req.body
     const { videoFile, thumnail } = req.files
+    console.log(req.files)
 
     if (title == '' || discription == '') {
         throw new ApiError(400, "All feild are required")
     }
-    console.log("hello")
-    console.log(videoFile[0].path)
+    // console.log(videoFile)
     // const videoFile = req.files?.videoFile[0]?.path
     // const thumnail = req.files?.thumnail[0]?.path
 
@@ -52,6 +53,7 @@ const publishAVideo = asynchandler(async (req, res) => {
 
 })
 
+//to get video by id
 const getVideoById = asynchandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: get video by id
@@ -88,6 +90,7 @@ const getVideoById = asynchandler(async (req, res) => {
 
 })
 
+// update the video details like title description , thumnail
 const updateVideo = asynchandler(async (req, res) => {
 
     // const { id } = req.params
@@ -136,4 +139,36 @@ const updateVideo = asynchandler(async (req, res) => {
 
 
 })
-export { publishAVideo, getVideoById, updateVideo }
+
+// to delete a video
+
+const deleteVideo = asynchandler(async (req, res) => {
+    const { videoId } = req.params
+    //TODO: delete video
+    console.log(videoId)
+    const video = await Video.findByIdAndDelete(videoId)
+    if (!video) {
+        return new ApiError(404, "Video not found")
+    }
+    res.status(200).json(new Apiresponse(200, video, "video deleted"))
+})
+// toggle a video published to unpublished vise-versa
+const togglePublishStatus = asynchandler(async (req, res) => {
+    const { videoId } = req.params
+
+    const togglvideo = await Video.findById(videoId)
+    if (!togglvideo) {
+        return new ApiError(404, "Video not found")
+    }
+    const status = togglvideo.ispublished
+
+    togglvideo.ispublished = !status
+    const resp = await togglvideo.save({ validateBeforeSave: false })
+
+    if (!resp) {
+        throw new ApiError(404, "failed to toggle the video")
+    }
+    res.status(200).
+        json(new Apiresponse(200, resp, "video status toggled"))
+})
+export { publishAVideo, getVideoById, updateVideo, deleteVideo, togglePublishStatus }   
