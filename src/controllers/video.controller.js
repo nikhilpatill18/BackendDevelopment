@@ -60,6 +60,9 @@ const getVideoById = asynchandler(async (req, res) => {
     // if (!new mongoose.Types.ObjectId.isValid(videoId)) {
     //     throw new ApiError(400, "invalid")
     // }
+    // console.log(videoId)
+
+    // console.log(new mongoose.Types.ObjectId(videoId))
 
     const videodetails = await Video.aggregate([
         {
@@ -75,7 +78,7 @@ const getVideoById = asynchandler(async (req, res) => {
             }
         }
     ])
-    console.log(videodetails) // todo empy video array is coming check after
+    // console.log(videodetails) // todo empy video array is coming check after
 
     if (!videodetails || !videodetails.length) {
         throw new ApiError(404, "Video not found")
@@ -84,4 +87,53 @@ const getVideoById = asynchandler(async (req, res) => {
         .json(new Apiresponse(200, videodetails, "Video details found"))
 
 })
-export { publishAVideo, getVideoById }
+
+const updateVideo = asynchandler(async (req, res) => {
+
+    // const { id } = req.params
+    const { id, utitle, discription, thumnail } = req.body
+
+
+    // console.log(id, utitle)
+
+
+    console.log(req.file)
+
+    const thumnailpath = req.file?.path
+
+    if (!thumnailpath) {
+        throw new ApiError(404, "thumnail file not found")
+    }
+
+    const uploadfile = await uploadoncloudinary(thumnailpath)
+
+    if (!uploadfile) {
+        throw new ApiError(404, "Failed while Uploading in cloudinary")
+    }
+    const videodetails = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(id)
+            }
+        },
+        {
+            $set: {
+                title: utitle,
+                discription: discription,
+                thumnail: uploadfile.url
+            }
+        }
+    ])
+    // console.log(videodetails)
+    return res.status(200)
+        .json(new Apiresponse(200, videodetails, "Video details found"))
+
+
+
+
+
+
+
+
+})
+export { publishAVideo, getVideoById, updateVideo }
