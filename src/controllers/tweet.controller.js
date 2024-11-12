@@ -2,10 +2,13 @@ import { asynchandler } from "../utils/asynchandler.js"
 import { Apiresponse } from "../utils/Apiresponse.js"
 import { ApiError } from "../utils/apierror.js"
 import { Tweet } from '../models/tweet.model.js'
+
+
 const createTweet = asynchandler(async (req, res) => {
     //TODO: create tweet
 
     const user = req.user
+    console.log(user)
 
     const { content } = req.body;
     console.log(content)
@@ -21,6 +24,7 @@ const createTweet = asynchandler(async (req, res) => {
     }
     console.log(tweet)
     return res.status(200).json(new Apiresponse(200, tweet, "success"))
+    // console.log(name, username)
 })
 
 const getUserTweets = asynchandler(async (req, res) => {
@@ -33,6 +37,7 @@ const updateTweet = asynchandler(async (req, res) => {
 
 const deleteTweet = asynchandler(async (req, res) => {
     //TODO: delete tweet
+
 })
 
 export {
