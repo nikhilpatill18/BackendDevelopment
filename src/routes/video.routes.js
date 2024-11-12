@@ -21,5 +21,5 @@ videoroute.route('/upload-video').post(upload.fields([
 videoroute.route('/get-videoById').get(getVideoById)
 videoroute.route('/updatevideo').post(upload.single('thumnail'), updateVideo)
 videoroute.route('/deletevideo/:videoId').get(deleteVideo)
-videoroute.route('/togglevideo/:videoId').get(togglePublishStatus)
+videoroute.route('/togglevideo  /:videoId').get(togglePublishStatus)
 export default videoroute
