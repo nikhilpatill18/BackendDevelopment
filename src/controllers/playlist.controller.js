@@ -90,6 +90,31 @@ const addVideoToPlaylist = asynchandler(async (req, res) => {
 const removeVideoFromPlaylist = asynchandler(async (req, res) => {
     const { playlistId, videoId } = req.params
     // TODO: remove video from playlist
+    if (!playlistId) {
+        throw new ApiError(404, "You must specify a playlist")
+    }
+    if (!videoId) {
+        throw new ApiError(404, "You must specify video")
+    }
+    const video = await Video.findById(videoId)
+    if (!video) {
+        throw new ApiError(404, "Video id not found")
+    }
+    const playlist = await Playlist.findById(playlistId)
+    if (!playlist) {
+        throw new ApiError(404, "Playlist id not found")
+    }
+    const updated = await Playlist.findByIdAndUpdate(
+        playlistId,
+        {
+            $pull: { videos: videoId }
+        },
+        { new: true }
+    )
+    if (!updated) {
+        throw new ApiError(404, "Faild to delete the video from playlist")
+    }
+    return res.status(200).json(new Apiresponse(200, updated, "video deleted from the  playlist"))
 
 })
 
