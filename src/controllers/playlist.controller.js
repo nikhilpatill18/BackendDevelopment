@@ -111,6 +111,28 @@ const updatePlaylist = asynchandler(async (req, res) => {
     const { playlistId } = req.params
     const { name, description } = req.body
     //TODO: update playlist
+    console.log(name)
+
+    if (name == '') {
+        throw new ApiError("invlaid name or description")
+    }
+    if (!playlistId) {
+        throw new ApiError(300, "playlist id is missing")
+    }
+    const updatedated = await Playlist.findByIdAndUpdate(
+        playlistId, {
+        $set: {
+            name: name,
+            description: description ? description : ''
+        }
+    }, {
+        new: true
+    }
+    )
+    if (!updatedated) {
+        throw new ApiError(301, "Falied to update the name and playlist")
+    }
+    return res.status(200).json(new Apiresponse(200, updatedated, "playlist updated sucessfully"))
 })
 
 export {
